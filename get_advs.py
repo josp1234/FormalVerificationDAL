@@ -111,7 +111,7 @@ def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('trial', type=str, help='Trial name', default='default_value')
-    parser.add_argument('stage', type=int, help='Stage num')
+    parser.add_argument('cycle', type=int, help='cycle num')
     parser.add_argument('job_idx', type=int, help='job idx')
     parser.add_argument('method', type=str, help='Method name')
     parser.add_argument('indices', type=int, nargs='*', help='Indices to run on', default=None)
@@ -119,24 +119,24 @@ def main():
     # Parse the arguments
     args = parser.parse_args()
     trial_name = args.trial
-    stage_num = args.stage
+    cycle_num = args.cycle
     indices = args.indices
     method = args.method
     n_advs = int(method.rsplit('_', 1)[-1])
     wait_for = 2700
 
     print(f"trial_name: {trial_name}", flush=True)
-    print(f"stage_num: {stage_num}", flush=True)
+    print(f"cycle_num: {cycle_num}", flush=True)
     print(f"method: {method}", flush=True)
     print(f"n_advs: {n_advs}", flush=True)
     print(f"indices: {indices}", flush=True)
 
-    if stage_num < 0 or indices is None or len(indices) == 0 or n_advs <= 0:
-        print(f"Invalid args\ntrial_name: {trial_name}, stage_num: {stage_num}, indices: {indices}", flush=True)
+    if cycle_num < 0 or indices is None or len(indices) == 0 or n_advs <= 0:
+        print(f"Invalid args\ntrial_name: {trial_name}, cycle_num: {cycle_num}, indices: {indices}", flush=True)
         sys.exit()
 
     base_path = "./"
-    cur_exp_path = base_path + f"/experiments/trial_{trial_name}/stage_{stage_num}/"
+    cur_exp_path = base_path + f"/experiments/trial_{trial_name}/cycle_{cycle_num}/"
     base_model_path = base_path + f"/experiments/trial_{trial_name}/init_model/"
     base_data_path = base_path + f"/experiments/trial_{trial_name}/init_data/"
 
@@ -144,11 +144,11 @@ def main():
 
     c = 0
 
-    if stage_num == 0:
+    if cycle_num == 0:
         model_path = base_model_path
 
     else:
-        prev_exp_path = base_path + f"/experiments/trial_{trial_name}/stage_{stage_num - 1}/"
+        prev_exp_path = base_path + f"/experiments/trial_{trial_name}/cycle_{cycle_num - 1}/"
         model_path = prev_exp_path + f"models/{method}_model"
 
     for cur_idx in indices:

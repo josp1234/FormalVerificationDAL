@@ -9,7 +9,7 @@ sbatch <<EOT
 #SBATCH --time=12:0:0
 #SBATCH --killable
 #SBATCH --requeue
-#SBATCH --output=stdouts/get_advs_trial_$1/stage_$2_$3_FGSM.out
+#SBATCH --output=stdouts/get_advs_trial_$1/cycle_$2_$3_FGSM.out
 #SBATCH --exclude=wadi-[01-05],gringolet-03,gringolet-04,gringolet-[01-06],creek-03
 
 python3 get_FGSM_advs.py $@

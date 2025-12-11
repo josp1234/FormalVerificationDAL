@@ -548,7 +548,7 @@ def is_job_running(_job_id):
     return _job_id in output
 
 
-def send_batch_job(_trial_name, _stage_idx, _num_samples_to_retrain, _cur_method):
+def send_batch_job(_trial_name, _cycle_idx, _num_samples_to_retrain, _cur_method):
     print(f"Sending batch job - {_cur_method}......", flush=True)
     if _cur_method.startswith("badge"):
         sbatch_file = "badgeSampling.sbatch"
@@ -558,7 +558,7 @@ def send_batch_job(_trial_name, _stage_idx, _num_samples_to_retrain, _cur_method
         print(f"Unknown method - {_cur_method}", flush=True)
         sys.exit(1)
     proc = subprocess.Popen(
-        ["bash", sbatch_file, _trial_name, str(_stage_idx), str(_num_samples_to_retrain), _cur_method],
+        ["bash", sbatch_file, _trial_name, str(_cycle_idx), str(_num_samples_to_retrain), _cur_method],
         stdout=subprocess.PIPE)
     stdout, _ = proc.communicate()
 
@@ -577,11 +577,11 @@ def send_batch_job(_trial_name, _stage_idx, _num_samples_to_retrain, _cur_method
         time.sleep(120)  # Wait for x seconds before checking again
 
 
-def send_get_FGSM_advs_jobs(_trial_name, _stage_idx, _model_path, _data_path, cur_dir_path, n_advs, _method, indices,
+def send_get_FGSM_advs_jobs(_trial_name, _cycle_idx, _model_path, _data_path, cur_dir_path, n_advs, _method, indices,
                             jobs_wait):
     print(f"Sending FGSM adv job for {_method}, len(indices)={len(indices)}......", flush=True)
     proc = subprocess.Popen(
-        ["bash", "getFGSMAdvs.sbatch", _trial_name, str(_stage_idx), _method, _model_path, _data_path, cur_dir_path,
+        ["bash", "getFGSMAdvs.sbatch", _trial_name, str(_cycle_idx), _method, _model_path, _data_path, cur_dir_path,
          str(n_advs)] + [
             str(x) for x in indices],
         stdout=subprocess.PIPE)
@@ -602,13 +602,13 @@ def send_get_FGSM_advs_jobs(_trial_name, _stage_idx, _model_path, _data_path, cu
         time.sleep(jobs_wait)  # Wait for x seconds before checking again
 
 
-def send_get_Marabou_advs_jobs(_method, indices, _stage_idx, _num_idxs_in_job, _trial_name, _cur_exp_path, jobs_wait):
+def send_get_Marabou_advs_jobs(_method, indices, _cycle_idx, _num_idxs_in_job, _trial_name, _cur_exp_path, jobs_wait):
     print(f"Sending adv jobs, len(indices)={len(indices)}......", flush=True)
     job_ids = set()
     for i in range(0, len(indices), _num_idxs_in_job):
         cur_indices = indices[i:i + _num_idxs_in_job]
         proc = subprocess.Popen(
-            ["bash", "getAdvs.sbatch", str(_trial_name), str(_stage_idx), str(i), str(_method)] + [str(x) for x in
+            ["bash", "getAdvs.sbatch", str(_trial_name), str(_cycle_idx), str(i), str(_method)] + [str(x) for x in
                                                                                                    cur_indices],
             stdout=subprocess.PIPE)
         stdout, _ = proc.communicate()
@@ -811,9 +811,9 @@ def main():
         if cycle_num == 0:
             prev_exp_path = None
         else:
-            prev_exp_path = base_path + f"/experiments/trial_{trial_name}/stage_{cycle_num - 1}/"
+            prev_exp_path = base_path + f"/experiments/trial_{trial_name}/cycle_{cycle_num - 1}/"
 
-        cur_exp_path = base_path + f"/experiments/trial_{trial_name}/stage_{cycle_num}/"
+        cur_exp_path = base_path + f"/experiments/trial_{trial_name}/cycle_{cycle_num}/"
         os.makedirs(cur_exp_path, exist_ok=True)
         os.makedirs(cur_exp_path + "rows", exist_ok=True)
         os.makedirs(cur_exp_path + "models", exist_ok=True)
@@ -851,7 +851,7 @@ def main():
                         indices = np.load(prev_exp_path + f"data/{method}_unlab_indices.npy")
                     my_utils.save_random_samples(indices, pool_size, cur_exp_path + "data/", method)
 
-        # create table rows
+        # create table rows (rank samples according to each DAL method)
         if len(query_methods) > 0 and not retrain_only:
             reg_methods = [s for s in query_methods if not s.startswith("eps_")]
             if len(reg_methods) > 0:
@@ -871,6 +871,7 @@ def main():
                        rand_adv_methods,
                        _num_classes=num_classes, _epoch_num=epoch_num, _dataset_name=dataset_name, jobs_wait=jobs_wait)
 
+        # delete unnecessary files
         if to_delete:
             print(f"deleting files - cycle {cycle_num}", flush=True)
             # remove stdout files

@@ -116,18 +116,18 @@ if __name__ == "__main__":
     base_model_path = os.path.join(base_path, "init_model")
     x_unlabeled = np.load(os.path.join(base_data_path, "x_unlabeled_total.npy"))
     y_unlabeled = np.load(os.path.join(base_data_path, "y_unlabeled_total.npy"))
-    last_model_path = base_path + f"/stage_19/models/{method}_model"
-    x_advs = np.load(base_path + f"/stage_19/{method}_advs/x_all_advs.npy")
-    y_advs = np.load(base_path + f"/stage_19/{method}_advs/y_all_advs.npy")
+    last_model_path = base_path + f"/cycle_19/models/{method}_model"
+    x_advs = np.load(base_path + f"/cycle_19/{method}_advs/x_all_advs.npy")
+    y_advs = np.load(base_path + f"/cycle_19/{method}_advs/y_all_advs.npy")
 
     results = []
-    for stage in [0, 19]:
-        print(f"starting stage {stage}", flush=True)
-        indices_to_add = np.load(base_path + f"/stage_{stage}/data/{method}_lab_indices.npy")
-        if stage == 0:
+    for cycle in [0, 19]:
+        print(f"starting cycle {cycle}", flush=True)
+        indices_to_add = np.load(base_path + f"/cycle_{cycle}/data/{method}_lab_indices.npy")
+        if cycle == 0:
             x_advs = x_advs[:n_samples_to_add*10]
             y_advs = y_advs[:n_samples_to_add*10]
-        elif stage == 19:
+        elif cycle == 19:
             indices_to_add = indices_to_add[-n_samples_to_add:]
             x_advs = x_advs[-n_samples_to_add*10:]
             y_advs = y_advs[-n_samples_to_add*10:]
@@ -138,12 +138,12 @@ if __name__ == "__main__":
         print(f"y_advs.shape = {y_advs.shape}", flush=True)
         x_train = x_unlabeled[indices_to_add]
         y_train = y_unlabeled[indices_to_add]
-        if stage == 0:
+        if cycle == 0:
             x_temp = np.concatenate((x_train, x_advs), axis=0)
             y_temp = np.concatenate((y_train, y_advs), axis=0)
             model = tf.keras.models.load_model(base_model_path)
             model = retrain_single_model(x_temp, y_temp, model)
-        elif stage == 19:
+        elif cycle == 19:
             model = tf.keras.models.load_model(last_model_path)
 
         print(f"x_advs.shape: {x_advs.shape}", flush=True)

@@ -8,7 +8,7 @@ import pandas as pd
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('_trial_name', type=str, help='Trial Name (not used)')
-    parser.add_argument('_stage_idx', type=str, help='Stage idx (not used)')
+    parser.add_argument('_cycle_idx', type=str, help='cycle idx (not used)')
     parser.add_argument('method', type=str, help='Method to calculate')
     parser.add_argument('model_path', type=str, help='Model path', default='default_value')
     parser.add_argument('data_path', type=str, help='Data path')

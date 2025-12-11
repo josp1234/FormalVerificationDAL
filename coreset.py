@@ -87,7 +87,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument('trial', type=str, help='Trial name', default='default_value')
-    parser.add_argument('stage', type=int, help='Stage num')
+    parser.add_argument('cycle', type=int, help='cycle num')
     parser.add_argument('n_samples', type=int, help='Num of samples to acquire')
     parser.add_argument('method', type=str, help='Name of current method')
 
@@ -95,19 +95,19 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     trial_name = args.trial
-    stage_num = args.stage
+    cycle_num = args.cycle
     n_samples = args.n_samples
     method = args.method
 
     base_path = "."
-    cur_exp_path = base_path + f"/experiments/trial_{trial_name}/stage_{stage_num}/"
-    prev_exp_path = base_path + f"/experiments/trial_{trial_name}/stage_{stage_num - 1}/"
+    cur_exp_path = base_path + f"/experiments/trial_{trial_name}/cycle_{cycle_num}/"
+    prev_exp_path = base_path + f"/experiments/trial_{trial_name}/cycle_{cycle_num - 1}/"
     base_model_path = base_path + f"/experiments/trial_{trial_name}/init_model/"
     base_data_path = base_path + f"/experiments/trial_{trial_name}/init_data/"
 
     x_unlabeled = np.load(base_data_path + "x_unlabeled_total.npy")
 
-    if stage_num == 0:
+    if cycle_num == 0:
         model = tf.keras.models.load_model(base_model_path)
         labeled_samples = None
     else:

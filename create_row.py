@@ -69,7 +69,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument('trial', type=str, help='Trial name', default='default_value')
-    parser.add_argument('stage', type=int, help='Stage num')
+    parser.add_argument('cycle', type=int, help='cycle num')
     parser.add_argument('job_idx', type=int, help='Job idx')
     parser.add_argument('to_calculate', type=int, help='Num of images to calculate in job')
     parser.add_argument('--methods', type=str, nargs='*', help='Query methods to use', default=["rand"])
@@ -79,24 +79,24 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     trial_name = args.trial
-    cycle_num = args.stage
+    cycle_num = args.cycle
     job_idx_arg = args.job_idx
     to_calculate = args.to_calculate
     query_methods = args.methods
 
     print(f"trial_name: {trial_name}", flush=True)
-    print(f"stage_num: {cycle_num}", flush=True)
+    print(f"cycle_num: {cycle_num}", flush=True)
     print(f"job_idx_arg: {job_idx_arg}", flush=True)
     print(f"to_calculate: {to_calculate}", flush=True)
     print(f"query_methods: {query_methods}", flush=True)
     print(f"num_classes: {args.num_classes}", flush=True)
 
     if cycle_num < 0 or job_idx_arg < 0:
-        print(f"Invalid args\ntrial_name: {trial_name}, stage_num: {cycle_num}, cur_idx: {job_idx_arg}", flush=True)
+        print(f"Invalid args\ntrial_name: {trial_name}, cycle_num: {cycle_num}, cur_idx: {job_idx_arg}", flush=True)
         sys.exit()
 
     base_path = "./"
-    cur_exp_path = base_path + f"/experiments/trial_{trial_name}/stage_{cycle_num}/"
+    cur_exp_path = base_path + f"/experiments/trial_{trial_name}/cycle_{cycle_num}/"
     base_model_path = base_path + f"/experiments/trial_{trial_name}/init_model/"
     base_data_path = base_path + f"/experiments/trial_{trial_name}/init_data/"
 
@@ -114,7 +114,7 @@ if __name__ == "__main__":
                 model_path = base_model_path
 
             else:
-                prev_exp_path = base_path + f"/experiments/trial_{trial_name}/stage_{cycle_num - 1}/"
+                prev_exp_path = base_path + f"/experiments/trial_{trial_name}/cycle_{cycle_num - 1}/"
                 model_path = prev_exp_path + f"models/{method}_model"
 
             if job_idx >= num_unlabeled:
