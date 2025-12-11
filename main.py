@@ -4,9 +4,6 @@ import pandas as pd
 import numpy as np
 import sys
 import tensorflow as tf
-from maraboupy import Marabou
-from maraboupy import MarabouCore
-from maraboupy import MarabouUtils
 import logging
 import my_utils
 import subprocess
@@ -14,8 +11,6 @@ import argparse
 import re
 import shutil
 import json
-
-MARABOU_PATH = "./Marabou/Marabou/build/Marabou"  # Set up Marabou path
 
 
 def delete_file(filename):

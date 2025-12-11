@@ -12,5 +12,5 @@ sbatch <<EOT
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=yhonatan.spigelman@mail.huji.ac.il
 
-python3 main.py $1 $2 --delete $3 --methods $4 --emb_size $5 --start_cycle $6 --cycles $7 --retrain_only $8 --num_samples $9
+python3 main.py $1 $2 --methods $3 --start_cycle $4 --cycles $5 --num_samples $6
 EOT
